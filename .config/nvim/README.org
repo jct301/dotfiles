@@ -1,0 +1,26 @@
+#+title: Neovim config
+#+description: Neovim config.
+#+author: jct301@gmail.com
+#+property: header-args :tangle init.lua
+#+auto_tangle: t
+#+startup: showverything
+
+* TABLE OF CONTENTS: :toc:
+- [[#variables][VARIABLES]]
+- [[#options][OPTIONS]]
+
+* VARIABLES
+#+begin_src lua
+local cmd = vim.cmd
+local exec = vim.api.nvim_exec
+local fn = vim.fn
+local g = vim.g
+local opt = vim.opt
+local api = vim.api
+local ag = vim.api.nvim_create_augroup
+local au = vim.api.nvim_create_autocmd
+#+end_src
+
+* OPTIONS
+#+begin_src lua
+#+end_src

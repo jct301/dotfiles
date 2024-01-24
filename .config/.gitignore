@@ -1,5 +1,6 @@
 /*
 !alacritty
+!atuin
 !amfora
 !awesome
 !bottom
@@ -41,4 +42,4 @@
 !xmobar
 !xmonad
 !.gitignore
-!starship.toml
+!starship

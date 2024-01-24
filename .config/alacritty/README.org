@@ -778,7 +778,7 @@ fontList:
 # *TerminessTTF
 # *Monofur
 
-font: *Iosevka
+font: *Mononoki
 #+END_SRC
 
 * Keybindings
@@ -980,7 +980,7 @@ window:
   # Background opacity
   # Window opacity as a floating point number from `0.0` to `1.0`.
   # The value `0.0` is completely transparent and `1.0` is opaque.
-  opacity: 0.95
+  opacity: 0.98
 
   # Window decorations
   # Values for `decorations`:
