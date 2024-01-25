@@ -1,5 +1,11 @@
 /*
+!youtube-dl
+!tuir
+!pgcli
+!fman
+!procs
 !alacritty
+!bat
 !atuin
 !amfora
 !awesome
@@ -14,7 +20,10 @@
 !dunst
 !eww
 !fish
+!fm
 !helix
+!micro
+!felix
 !htop
 !kitty
 !moc
@@ -33,8 +42,10 @@
 !rofi
 !surf
 !sxhkd
+!lapce
 !sxiv
 !tabliss
+!joshuto
 !tint2
 !vifm
 !volumeicon
@@ -42,4 +53,6 @@
 !xmobar
 !xmonad
 !.gitignore
-!starship
+!navi
+!zellij
+!starship.toml

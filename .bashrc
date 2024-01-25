@@ -34,27 +34,27 @@ bind -m vi-insert 'Control-l: clear-screen'
 
 ### PATH
 if [ -d "$HOME/.bin" ]; then
-	PATH="$HOME/.bin:$PATH"
+  PATH="$HOME/.bin:$PATH"
 fi
 
 if [ -d "$HOME/.local/bin" ]; then
-	PATH="$HOME/.local/bin:$PATH"
+  PATH="$HOME/.local/bin:$PATH"
 fi
 
 if [ -d "$HOME/.emacs.d/bin" ]; then
-	PATH="$HOME/.emacs.d/bin:$PATH"
+  PATH="$HOME/.emacs.d/bin:$PATH"
 fi
 
 if [ -d "$HOME/Applications" ]; then
-	PATH="$HOME/Applications:$PATH"
+  PATH="$HOME/Applications:$PATH"
 fi
 
 if [ -d "/var/lib/flatpak/exports/bin/" ]; then
-	PATH="/var/lib/flatpak/exports/bin/:$PATH"
+  PATH="/var/lib/flatpak/exports/bin/:$PATH"
 fi
 
 if [ -d "$HOME/go/bin/" ]; then
-	PATH="$HOME/go/bin/:$PATH"
+  PATH="$HOME/go/bin/:$PATH"
 fi
 
 # pnpm
@@ -71,13 +71,13 @@ export PATH="$DENO_INSTALL/bin:$PATH"
 
 ### SETTING OTHER ENVIRONMENT VARIABLES
 if [ -z "$XDG_CONFIG_HOME" ]; then
-	export XDG_CONFIG_HOME="$HOME/.config"
+  export XDG_CONFIG_HOME="$HOME/.config"
 fi
 if [ -z "$XDG_DATA_HOME" ]; then
-	export XDG_DATA_HOME="$HOME/.local/share"
+  export XDG_DATA_HOME="$HOME/.local/share"
 fi
 if [ -z "$XDG_CACHE_HOME" ]; then
-	export XDG_CACHE_HOME="$HOME/.cache"
+  export XDG_CACHE_HOME="$HOME/.cache"
 fi
 export XMONAD_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/xmonad" # xmonad.hs is expected to stay here
 export XMONAD_DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/xmonad"
@@ -86,11 +86,11 @@ export XMONAD_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/xmonad"
 ### CHANGE TITLE OF TERMINALS
 case ${TERM} in
 xterm* | rxvt* | Eterm* | aterm | kterm | gnome* | alacritty | st | konsole*)
-	PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\007"'
-	;;
+  PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\007"'
+  ;;
 screen*)
-	PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\033\\"'
-	;;
+  PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\033\\"'
+  ;;
 esac
 
 ### SHOPT
@@ -108,36 +108,36 @@ bind "set completion-ignore-case on"
 ### COUNTDOWN
 
 cdown() {
-	N=$1
-	while [[ $((--N)) > 0 ]]; do
-		echo "$N" | figlet -c | lolcat && sleep 1
-	done
+  N=$1
+  while [[ $((--N)) > 0 ]]; do
+    echo "$N" | figlet -c | lolcat && sleep 1
+  done
 }
 
 ### ARCHIVE EXTRACTION
 # usage: ex <file>
 ex() {
-	if [ -f "$1" ]; then
-		case $1 in
-		*.tar.bz2) tar xjf $1 ;;
-		*.tar.gz) tar xzf $1 ;;
-		*.bz2) bunzip2 $1 ;;
-		*.rar) unrar x $1 ;;
-		*.gz) gunzip $1 ;;
-		*.tar) tar xf $1 ;;
-		*.tbz2) tar xjf $1 ;;
-		*.tgz) tar xzf $1 ;;
-		*.zip) unzip $1 ;;
-		*.Z) uncompress $1 ;;
-		*.7z) 7z x $1 ;;
-		*.deb) ar x $1 ;;
-		*.tar.xz) tar xf $1 ;;
-		*.tar.zst) unzstd $1 ;;
-		*) echo "'$1' cannot be extracted via ex()" ;;
-		esac
-	else
-		echo "'$1' is not a valid file"
-	fi
+  if [ -f "$1" ]; then
+    case $1 in
+    *.tar.bz2) tar xjf $1 ;;
+    *.tar.gz) tar xzf $1 ;;
+    *.bz2) bunzip2 $1 ;;
+    *.rar) unrar x $1 ;;
+    *.gz) gunzip $1 ;;
+    *.tar) tar xf $1 ;;
+    *.tbz2) tar xjf $1 ;;
+    *.tgz) tar xzf $1 ;;
+    *.zip) unzip $1 ;;
+    *.Z) uncompress $1 ;;
+    *.7z) 7z x $1 ;;
+    *.deb) ar x $1 ;;
+    *.tar.xz) tar xf $1 ;;
+    *.tar.zst) unzstd $1 ;;
+    *) echo "'$1' cannot be extracted via ex()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
 }
 
 ### ALIASES ###
@@ -147,26 +147,25 @@ alias doas="doas --"
 
 # navigation
 up() {
-	local d=""
-	local limit="$1"
+  local d=""
+  local limit="$1"
 
-	# Default to limit of 1
-	if [ -z "$limit" ] || [ "$limit" -le 0 ]; then
-		limit=1
-	fi
+  # Default to limit of 1
+  if [ -z "$limit" ] || [ "$limit" -le 0 ]; then
+    limit=1
+  fi
 
-	for ((i = 1; i <= limit; i++)); do
-		d="../$d"
-	done
+  for ((i = 1; i <= limit; i++)); do
+    d="../$d"
+  done
 
-	# perform cd. Show error if cd fails
-	if ! cd "$d"; then
-		echo "Couldn't go up $limit dirs."
-	fi
+  # perform cd. Show error if cd fails
+  if ! cd "$d"; then
+    echo "Couldn't go up $limit dirs."
+  fi
 }
 
 # vim and emacs
-alias vim="nvim"
 alias em="/usr/bin/emacs -nw"
 alias emacs="emacsclient -c -a 'emacs'"
 
@@ -282,11 +281,8 @@ alias rr='curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/mas
 # Unlock LBRY tips
 alias tips='lbrynet txo spend --type=support --is_not_my_input --blocking'
 
-### DTOS ###
-# Copy/paste all content of /etc/dtos over to home folder. A backup of config is created. (Be careful running this!)
-alias dtoscopy='[ -d ~/.config ] || mkdir ~/.config && cp -Rf ~/.config ~/.config-backup-$(date +%Y.%m.%d-%H.%M.%S) && cp -rf /etc/dtos/* ~'
-# Backup contents of /etc/dtos to a backup folder in $HOME.
-alias dtosbackup='cp -Rf /etc/dtos ~/dtos-backup-$(date +%Y.%m.%d-%H.%M.%S)'
+# felix
+alias fx="felix"
 
 ### RANDOM COLOR SCRIPT ###
 # Get this script from my GitLab: gitlab.com/dwt1/shell-color-scripts
@@ -295,7 +291,7 @@ colorscript random
 
 ### BASH INSULTER ###
 if [ -f /etc/bash.command-not-found ]; then
-	. /etc/bash.command-not-found
+  . /etc/bash.command-not-found
 fi
 
 ### SETTING THE STARSHIP PROMPT ###

@@ -8,6 +8,8 @@
 * TABLE OF CONTENTS: :toc:
 - [[#variables][VARIABLES]]
 - [[#options][OPTIONS]]
+- [[#keymaps][KEYMAPS]]
+- [[#plugins][PLUGINS]]
 
 * VARIABLES
 #+begin_src lua
@@ -22,5 +24,13 @@ local au = vim.api.nvim_create_autocmd
 #+end_src
 
 * OPTIONS
+#+begin_src lua
+#+end_src
+
+* KEYMAPS
+#+begin_src lua
+#+end_src
+
+* PLUGINS
 #+begin_src lua
 #+end_src

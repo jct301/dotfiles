@@ -1,9 +1,12 @@
 /*
+!.myclirc
+!.newsboat
+!.nanorc
+!.ripgreprc
 !.config
 !.elinks
 !.emacs.d
 !.local
-!screenshots
 !.Xresources
 !.bashrc
 !.fzf.bash
@@ -11,6 +14,7 @@
 !.gitignore
 !.vimrc
 !.xinitrc
+!.nanorc
 !.zshrc
 !LICENSE
 !README.org
