@@ -299,3 +299,6 @@ eval "$(starship init bash)"
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 PATH=~/.console-ninja/.bin:$PATH
+
+# Generated for envman. Do not edit.
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"

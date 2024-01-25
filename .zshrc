@@ -322,3 +322,6 @@ bindkey "^[[F" end-of-line
 bindkey "^[[3~" delete-char
 bindkey "^[[1;3C" forward-word
 bindkey "^[[1;3D" backward-word
+
+# Generated for envman. Do not edit.
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"

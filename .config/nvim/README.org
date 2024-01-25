@@ -29,6 +29,9 @@ local au = vim.api.nvim_create_autocmd
 
 * KEYMAPS
 #+begin_src lua
+opt.number = true
+opt.relativenumber = true
+opt.signcolumn = "yes"
 #+end_src
 
 * PLUGINS

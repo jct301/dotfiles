@@ -352,3 +352,6 @@ colorscript random
 
 ### SETTING THE STARSHIP PROMPT ###
 starship init fish | source
+
+# Generated for envman. Do not edit.
+test -s ~/.config/envman/load.fish; and source ~/.config/envman/load.fish
