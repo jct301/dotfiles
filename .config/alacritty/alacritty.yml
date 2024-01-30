@@ -705,7 +705,7 @@ fontList:
 # *TerminessTTF
 # *Monofur
 
-font: *Mononoki
+font: *Iosevka
 
 ##### KEY BINDINGS
 # Key bindings are specified as a list of objects. For example, this is the
