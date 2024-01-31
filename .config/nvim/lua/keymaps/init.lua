@@ -1,0 +1,10 @@
+local function keymap(m, k, v)
+  vim.keymap.set(m, k, v, { noremap = true, silent = true})
+end
+keymap("n", "<leader>fc",  "<CMD>Telescope commands<CR>")
+keymap("n", "<leader>fd",  "<CMD>Telescope diagnostics<CR>")
+keymap("n", "<leader>ff",  "<CMD>Telescope find_files<CR>")
+keymap("n", "<leader>fgb", "<CMD>Telescope git_branch<CR>")
+keymap("n", "<leader>fgc", "<CMD>Telescope git_commits<CR>")
+keymap("n", "<leader>fgs", "<CMD>Telescope git_status<CR>")
+keymap("n", "<leader>fh",  "<CMD>Telescope help_tags<CR>")
