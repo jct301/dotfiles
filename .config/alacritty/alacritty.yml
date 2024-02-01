@@ -514,7 +514,7 @@ schemes:
 # *SolarizedDark
 # *TomorrowNight
 
-colors: *DoomOne
+colors: *Dracula
 
 ##### FONT CONFIGURATION
 fontList:

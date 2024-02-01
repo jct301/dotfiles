@@ -584,7 +584,7 @@ schemes:
 # *SolarizedDark
 # *TomorrowNight
 
-colors: *DoomOne
+colors: *Dracula
 #+END_SRC
 
 * Fonts
