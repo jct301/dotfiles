@@ -1,7 +1,7 @@
 -- Copyright (c) 2024-Present Jean Carlos T. R.
 
 -- Permission is hereby granted, free of charge, to any person 
--- obtaining a copy of this software and associated documentation
+  -- obtaining a copy of this software and associated documentation
 -- files (the "Software"), to deal in the Software without 
 -- restriction, including without limitation the rights to use, copy,
 -- modify, merge, publish, distribute, sublicense, and/or sell copies
@@ -20,9 +20,7 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 -- DEALINGS IN THE SOFTWARE.
 
---------------------------------------------
--- BASE
---------------------------------------------
+-- OPTIONS 
 -- Configuration options
 local options = {
   clipboard = "unnamed,unnamedplus",
@@ -92,13 +90,77 @@ for k, v in pairs(globals) do
   vim.g[k] = v
 end
 
-
---------------------------------------------
--- PLUGINS
---------------------------------------------
-
--- Plugins list
 local plugins = {
+  {
+	'norcalli/nvim-colorizer.lua',
+	config = true
+},
+{
+	'ggandor/leap.nvim',
+	config = function()
+	require('leap').add_default_mappings()
+	end
+},
+{
+        "lukas-reineke/headlines.nvim",
+        dependencies = "nvim-treesitter/nvim-treesitter",
+        config = true, -- or `opts = {}`
+    },
+  -- Neorg https://github.com/nvim-neorg/neorg
+  {
+    "nvim-neorg/neorg",
+    build = ":Neorg sync-parsers",
+    dependencies = { 
+      "nvim-lua/plenary.nvim",
+      "madskjeldgaard/neorg-figlet-module",
+      "nvim-neorg/neorg-telescope"
+    },
+    config = function()
+      require("neorg").setup {
+        load = {
+          ["core.defaults"] = {},
+          ["core.concealer"] = {},
+          ["external.integrations.figlet"] = {
+	    config = {
+	      font = "doom",
+	      wrapInCodeTags = true
+	    }
+	  },
+          ["core.integrations.telescope"] = {},
+          ["core.dirman"] = {
+            config = {
+              workspaces = {
+                notes = "~/notes",
+              },
+            },
+          },
+        },
+      }
+    end,
+  },
+  {
+    'nvim-orgmode/orgmode',
+    dependencies = {
+      { 'nvim-treesitter/nvim-treesitter', lazy = true },
+      "joaomsa/telescope-orgmode.nvim"
+    },
+    event = 'VeryLazy',
+    config = function()
+    require("telescope").load_extension("orgmode")
+      require('orgmode').setup_ts_grammar()
+      require('nvim-treesitter.configs').setup({
+        highlight = {
+          enable = true,
+          additional_vim_regex_highlighting = { 'org' },
+        },
+        ensure_installed = { 'org' },
+      })
+      require('orgmode').setup({
+        org_agenda_files = '~/notes/**/*',
+        org_default_notest_file = '~/nodes/notes.org'
+      })
+    end,
+  },
   -- Colorschemes
 
   -- Catppuccin https://github.com/catppuccin/nvim
@@ -146,7 +208,7 @@ local plugins = {
           gitsigns = true,
           nvimtree = true,
           treesitter = true,
-          notify = false,
+          notify = true,
           mini = {
             enabled = true,
             indentscope_color = "",
@@ -156,6 +218,98 @@ local plugins = {
       require("catppuccin").setup(options)
       vim.cmd.colorscheme("catppuccin")
     end
+  },
+
+  {
+    "ranjithshegde/orgWiki.nvim",
+    config = function()
+      require("orgWiki").setup({
+         wiki_path = { "~/notes/documents/" },
+         diary_path = "~/notes/diary/"
+      })
+    end
+  },
+
+  {
+    "mrshmllow/orgmode-babel.nvim",
+    dependencies = {
+      "nvim-orgmode/orgmode",
+      "nvim-treesitter/nvim-treesitter"
+    },
+    cmd = { "OrgExecute", "OrgTangle" },
+    opts = {
+      langs = { "python", "lua", ... },
+      load_paths = {}
+    }
+  },
+
+  'BartSte/nvim-khalorg',
+  {
+  'andreadev-it/orgmode-multi-key',
+  config = function()
+    require('orgmode-multi-key').setup()
+  end
+  },
+
+  {
+    'akinsho/org-bullets.nvim', config = true  },
+
+  {
+    "jubnzv/mdeval.nvim",
+    config = function()
+    end
+  },
+
+  {
+    "danilshvalov/org-modern.nvim",
+    config = function()
+      require("orgmode").setup({
+  ui = {
+    menu = {
+      handler = function(data)
+        require("org-modern.menu"):new({
+          window = {
+            margin = { 1, 0, 1, 0 },
+            padding = { 0, 1, 0, 1 },
+            title_pos = "center",
+            border = "single",
+            zindex = 1000,
+          },
+          icons = {
+            separator = "➜",
+          },
+            }):open(data)
+            end,
+          },
+        },
+      })
+    end
+  },
+
+  -- Nvim tree
+  {
+    "nvim-tree/nvim-tree.lua",
+    version = "*",
+    lazy = false,
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+    },
+    config = function()
+      require("nvim-tree").setup({
+        sort = {
+          sorter = "case_sensitive",
+        },
+        view = {
+          width = 30,
+        },
+        renderer = {
+          group_empty = true,
+        },
+        filters = {
+          dotfiles = true,
+        },
+      })
+    end,
   },
   
   -- Autoclose https://github.com/m4xshen/autoclose.nvim
@@ -363,6 +517,7 @@ local plugins = {
           { name = "path" },
           { name = "buffer" },
           { name = "spell" },
+          { name = "orgmode" }
         },
         sorting = {
           priority_weight = 2,
@@ -633,6 +788,19 @@ local plugins = {
     opts = { disable_legacy_commands = true }
   },
   {
+    "arnamak/stay-centered.nvim",
+    opts = {
+      skip_filetypes = {
+        "lua",
+        "typescript",
+        "python",
+        "rust",
+        "toml"
+      },
+    },
+    config = true
+  },
+  {
     "ellisonleao/glow.nvim",
     lazy = false,
     config = true,
@@ -812,12 +980,14 @@ local plugins = {
           end
           local insert = 2
           for 
-            indx, arg in ipairs(vim.split(args[2][1], ", ", true)) do
+            indx, arg in ipairs(
+            vim.split(args[2][1], ", ", true)) do
             arg = vim.split(arg, " ", true)[2]
             if arg then
               local inode
               if old_state and old_state[arg] then
-                inode = i(insert, old_state["arg" .. arg]:get_text())
+                inode = i(insert, 
+                old_state["arg" .. arg]:get_text())
               else
                 inode = i(insert)
               end
@@ -852,7 +1022,10 @@ local plugins = {
             insert = insert + 1
           end
           if vim.tbl_count(args[3]) ~= 1 then
-            local exc = string.gsub(args[3][2], " throws ", "")
+            local exc = string.gsub(
+            args[3][2], 
+            " throws ",
+            "")
             local ins
             if old_state and old_state.ex then
               ins = i(insert, old_state.ex:get_text())
@@ -883,7 +1056,8 @@ local plugins = {
           end
           return res
         end
-        local date_input = function(args, snip, old_state, fmt)
+        local date_input = function(
+          args, snip, old_state, fmt)
           local fmt = fmt or "%Y-%m-%d"
           return sn(nil, i(1, os.date(fmt)))
         end
@@ -1044,11 +1218,11 @@ local plugins = {
             l(l.CAPTURE1:gsub("1", l.TM_FILENAME), {}),
           }),
           s("link_url", {
-            t('<a href="'),
+            t("<a href='"),
             f(function(_, snip)
               return snip.env.TM_SELECTED_TEXT[1] or {}
             end, {}),
-            t('">'),
+            t("'>"),
             i(1),
             t("</a>"),
             i(0),
@@ -1172,9 +1346,34 @@ local plugins = {
   },
   "ixru/nvim-markdown",
   "jakewvincent/mkdnflow.nvim",
-  { "danymat/neogen",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
+  { 
+    "danymat/neogen",
+    dependencies = "nvim-treesitter/nvim-treesitter",
+    opts = {
+      enabled = true,
+      snippet_engine = "luasnip",
+      languages = {
+        rust = {
+          template = {
+            annotation_convention = "rustdoc",
+          }
+        },
+        python = {
+          template = {
+            annotation_convention = "numpydoc",
+          }
+        },
+        javascript = {
+          template = {
+            annotation_convention = "tsdoc",
+          }
+        },
+        typescript = {
+          template = {
+            annotation_convention = "tsdoc",
+          }
+        }
+      }
     }
   },
   { "NeogitOrg/neogit",
@@ -1189,6 +1388,17 @@ local plugins = {
       "MunifTanjim/nui.nvim",
       "rcarriga/nvim-notify"
     },
+    opts = {
+      notify = {
+        view = "mini"
+      },
+      messages = {
+        view = "mini"
+      },
+      errors = {
+        view = "mini"
+      }
+    }
   },
   { "nvim-neotest/neotest",
     dependencies = {
@@ -1200,11 +1410,238 @@ local plugins = {
       "nvim-neotest/neotest-python",
       "rouge8/neotest-rust",
       "rcasia/neotest-bash",
+      "nvim-neotest/neotest-go",
+      "nvim-neotest/neotest-jest",
+      "marilari88/neotest-vitest",
+      "thenbe/neotest-playwright",
+      "zidhuss/neotest-minitest",
+      "olimorris/neotest-rspec",
+      "sidlatau/neotest-dart",
+      "olimorris/neotest-phpunit",
+      "jfpedroza/neotest-elixir",
+      "Issafalcon/neotest-dotnet",
+      "stevanmilic/neotest-scala",
+      "mrcjkb/neotest-haskell",
+      "markemmons/neotest-deno",
+      "rcasia/neotest-java",
+      "lawrence-laz/neotest-zig",
+      "alfaix/neotest-gtest"
+    },
+    opts = {},
+    config = function()
+      require("neotest").setup({
+        log_level = vim.log.levels.WARN,
+        adapters = {
+          require("neotest-python")({
+            dap = { justMyCode = false },
+            args = { "--log-level", "DEBUG" },
+            runner = "unittest",
+            python = ".venv/bin/python",
+          }),
+          require("neotest-rust")({
+            args = { "--no-capture" },
+            dap_adapter = "lldb",
+          }),
+          require("neotest-bash"),
+          require("neotest-go"),
+          require("neotest-jest"),
+          require("neotest-vitest"),
+          require("neotest-playwright").adapter({
+            options = {
+              persist_project_selection = true,
+              enable_dynamic_test_discovery = true,
+            }
+          }),
+          require("neotest-rspec"),
+          require("neotest-minitest"),
+          require("neotest-dart")({
+            command = "flutter",
+            use_lsp = true,
+            custom_test_method_names = {},
+          }),
+          require("neotest-phpunit"),
+          require("neotest-elixir"),
+          require("neotest-dotnet")({
+            dap = { justMyCode = false },
+            dotnet_additional_args = { "--verbosity detailed" }
+          }),
+          require("neotest-scala")({
+            args = { "--no-color" },
+            runner = "bloop",
+            franerwork = "utest"
+          }),
+          require("neotest-haskell")({
+            build_tools = { "stack", "cabal" },
+            frameworks = { "tasty", "hspec", "sydtest" }
+          }),
+          require("neotest-deno"),
+          require("neotest-java")({
+            ignore_wrapper = false
+          }),
+          require("neotest-zig"),
+        },
+        discovery = {
+          enabled = true,
+          concurrent = 0,
+          filter_dir = nil,
+        },
+        running = {
+          concurrent = true,
+        },
+        consumers = {},
+        icons = {
+          running_animated = { 
+            "/", "|", "\\", "-", "/", "|", "\\", "-"
+          },
+            passed = "",
+            running = "",
+            failed = "",
+            skipped = "",
+            unknown = "",
+            non_collapsible = "─",
+            collapsed = "─",
+            expanded = "╮",
+            child_prefix = "├",
+            final_child_prefix = "╰",
+            child_indent = "│",
+            final_child_indent = " ",
+            watching = "",
+          },
+          highlights = {
+            passed = "NeotestPassed",
+            running = "NeotestRunning",
+            failed = "NeotestFailed",
+            skipped = "NeotestSkipped",
+            test = "NeotestTest",
+            namespace = "NeotestNamespace",
+            focused = "NeotestFocused",
+            file = "NeotestFile",
+            dir = "NeotestDir",
+            border = "NeotestBorder",
+            indent = "NeotestIndent",
+            expand_marker = "NeotestExpandMarker",
+            adapter_name = "NeotestAdapterName",
+            select_win = "NeotestWinSelect",
+            marked = "NeotestMarked",
+            target = "NeotestTarget",
+            unknown = "NeotestUnknown",
+            watching = "NeotestWatching",
+          },
+          floating = {
+            border = "rounded",
+            max_height = 0.6,
+            max_width = 0.6,
+            options = {},
+          },
+          default_strategy = "integrated",
+          strategies = {
+            integrated = {
+              width = 120,
+              height = 40,
+            },
+          },
+          summary = {
+            enabled = true,
+            animated = true,
+            follow = true,
+            expand_errors = true,
+            open = "botright vsplit | vertical resize 50",
+            mappings = {
+              expand = { "<CR>", "<2-LeftMouse>" },
+              expand_all = "e",
+              output = "o",
+              short = "O",
+              attach = "a",
+              jumpto = "i",
+              stop = "u",
+              run = "r",
+              debug = "d",
+              mark = "m",
+              run_marked = "R",
+              debug_marked = "D",
+              clear_marked = "M",
+              target = "t",
+              clear_target = "T",
+              next_failed = "J",
+              prev_failed = "K",
+              watch = "w",
+            },
+          },
+          benchmark = {
+            enabled = true,
+          },
+          output = {
+            enabled = true,
+            open_on_run = "short",
+          },
+          output_panel = {
+            enabled = true,
+            open = "botright split | resize 15",
+          },
+          diagnostic = {
+            enabled = true,
+            severity = vim.diagnostic.severity.ERROR,
+          },
+          status = {
+            enabled = true,
+            virtual_text = false,
+            signs = true,
+          },
+          run = {
+            enabled = true,
+          },
+          jump = {
+            enabled = true,
+          },
+          quickfix = {
+            enabled = true,
+            open = false,
+          },
+          state = {
+            enabled = true,
+          },
+          watch = {
+            enabled = true,
+          },
+          projects = {},
+        })
+    end
+  },
+  -- Notify
+  {
+     "rcarriga/nvim-notify",
+    opts = {
+       background_colour = "#000000"
     }
   },
+  -- Rainbow delimiters
   {
-    "rcarriga/nvim-notify",
-   "HiPhish/rainbow-delimiters.nvim",
+    "HiPhish/rainbow-delimiters.nvim",
+    event = "VeryLazy",
+    config = function()
+      local rainbow_delimiters = require("rainbow-delimiters")
+      require("rainbow-delimiters.setup")({
+        strategy = {
+          [""] = rainbow_delimiters.strategy["global"],
+          commonlisp = rainbow_delimiters.strategy["local"],
+        },
+        query = {
+          [""] = "rainbow-delimiters",
+          latex = "rainbow-blocks",
+        },
+        highlight = {
+          "RainbowDelimiterRed",
+          "RainbowDelimiterYellow",
+          "RainbowDelimiterBlue",
+          "RainbowDelimiterOrange",
+          "RainbowDelimiterGreen",
+          "RainbowDelimiterViolet",
+          "RainbowDelimiterCyan",
+        },
+      })
+    end
+  },
+  {
     "amitds1997/remote-nvim.nvim",
     version = "*",
     dependencies = {
@@ -1213,55 +1650,479 @@ local plugins = {
       "rcarriga/nvim-notify",
       "nvim-telescope/telescope.nvim",
     },
+    config = true
   },
-  { "rest-nvim/rest.nvim", dependencies = "nvim-lua/plenary.nvim" },
-  "simrat39/rust-tools.nvim",
-   "sidebar-nvim/sidebar.nvim",
-   { 
-     "gen740/SmoothCursor.nvim",
-     "kylechui/nvim-surround",
-     version = "*"
+  -- Rest
+  { 
+    "rest-nvim/rest.nvim",
+    dependencies = "nvim-lua/plenary.nvim",
+    lazy = false,
+    config = true,
+    opts = {
+      result_split_horizontal = false,
+      result_split_in_place = false,
+      stay_in_current_window_after_split = false,
+      skip_ssl_verification = false,
+      encode_url = true,
+      highlight = {
+          enabled = true,
+          timeout = 150,
+      }, 
+      result = {
+        show_url = true,
+        show_curl_command = true,
+        show_http_info = true,
+        show_headers = true,
+        show_statistics = false,
+        formatters = {
+          json = "jq",
+          html = function(body)
+            return vim.fn.system({ 
+              "tidy",
+              "-i",
+              "-q", 
+              "-"
+            },
+            body)
+          end
+        },
+      },
+      jump_to_request = false,
+      env_file = ".env",
+      custom_dynamic_variables = {},
+      yank_dry_run = true,
+      search_back = true,
+    }
   },
-  "nvim-telescope/telescope-media-files.nvim",
-   "nvim-telescope/telescope-ui-select.nvim",
-   {
+  {
+    "sidebar-nvim/sidebar.nvim",
+    opts = {
+      open = false
+    }
+  },
+   
+  {
+    "gen740/SmoothCursor.nvim",
+    event = "VeryLazy",
+    config = true,
+    opts = {
+      type = "exp",
+      fancy = {
+        enable = true
+      }
+    },
+  },
+  {
+    "kylechui/nvim-surround",
+    version = "*",
+    event = "VeryLazy",
+    config = true
+  },
+  {
+    "nvim-telescope/telescope-media-files.nvim",
+    config = function()
+      require"telescope".setup {
+        extensions = {
+          media_files = {
+            filetypes = {"png", "webp", "jpg", "jpeg"},
+            find_cmd = "rg"
+          }
+        },
+      }
+    end,
+  },
+  {
+    "nvim-telescope/telescope-ui-select.nvim",
+      config = function()
+        require("telescope").setup {
+          extensions = {
+            ["ui-select"] = {
+              require("telescope.themes").get_dropdown()
+            }
+          }
+        }
+        require("telescope").load_extension("ui-select")
+    end
+  },
+  {
     "nvim-telescope/telescope-file-browser.nvim",
     dependencies = { 
       "nvim-telescope/telescope.nvim", 
-      "nvim-lua/plenary.nvim" 
-    }
+      "nvim-lua/plenary.nvim"
+    },
+    config = function()
+      require("telescope").load_extension("file_browser")
+    end
   },
   {
     "nvim-telescope/telescope.nvim",
     dependencies = {
-        "nvim-telescope/telescope-live-grep-args.nvim",
-        "nvim-telescope/telescope-symbols.nvim",
-        "nvim-telescope/telescope-file-browser.nvim",
-        "nvim-telescope/telescope-dap.nvim",
-        "olacin/telescope-gitmoji.nvim",
-        "xiyaowong/telescope-emoji.nvim",
-        "LinArcX/telescope-command-palette.nvim",
+      "nvim-telescope/telescope-live-grep-args.nvim",
+      "nvim-telescope/telescope-symbols.nvim",
+      "nvim-telescope/telescope-file-browser.nvim",
+      "nvim-telescope/telescope-dap.nvim",
+      "olacin/telescope-gitmoji.nvim",
+      "xiyaowong/telescope-emoji.nvim",
+      "LinArcX/telescope-command-palette.nvim"
+    },
+    config = function()
+      local lga_actions = require("telescope-live-grep-args.actions")
+      require("telescope").setup({
+        defaults = {
+          mappings = {
+            i = { ["<C-h>"] = "which_key" }
+          }
+        },
+        pickers = {},
+        extensions = {
+          workspaces = { keep_insert = true },
+          live_grep_args = {
+            auto_quoting = true,
+            mappings = {
+              i = {
+                ["<C-k>"] = lga_actions.quote_prompt(),
+                ["<C-i>"] = lga_actions.quote_prompt({
+                  postfix = " --iglob " }
+                ),
+              },
+            },
+          },
+          gitmoji = {
+            action = function()
+              entry = {
+                display = "🐛 Fix a bug.",
+                index = 4,
+                ordinal = "Fix a bug.",
+                value = {
+                  description = "Fix a bug.",
+                  text = ":bug:",
+                  value = "🐛"
+                }
+              }
+              local emoji = entry.value.value
+              vim.ui.input(
+                { prompt = "Enter commit message: " .. emoji .. " "},
+                function(msg)
+                  if not msg then return end
+                  local emoji_text = entry.value.text
+                  vim.cmg(
+                  ":G commit -m'" .. emoji_text .. " " .. msg .. "'"
+                  )
+                end)
+            end
+          },
+          command_palette = {
+            { "File",
+              { "entire selection (C-a)", ":call feedkeys('GVgg')" },
+              { "save current file (C-s)", ":w" },
+              { "save all files (C-A-s)", ":wa" },
+              { "quit (C-q)", ":qa" },
+              { "file browser (C-i)", ":Telescope file_browser", 1 },
+              { "search word (A-w)", ":Telescope live_grep", 1 },
+              { "git files (A-f)", ":Telescope git_files", 1 },
+              { "files (C-f)", ":Telescope find_files", 1 },
+            },
+            { "Help",
+              { "tips", ":help tips" },
+              { "cheatsheet", ":help index" },
+              { "tutorial", ":help tutor" },
+              { "summary", ":help summary" },
+              { "quick reference", ":help quickref" },
+              { "search help(F1)", ":Telescope help_tags", 1 },
+            },
+            { "Code",
+              { "Preview markdown", ":Glow" },
+              { "Reformat code", ":Reformat" }
+            },
+            { "Vim",
+              { "reload vimrc", ":source $MYVIMRC" },
+              { "check health", ":checkhealth" },
+              { "jumps (Alt-j)",":Telescope jumplist" },
+              { "commands", ":Telescope commands" },
+              { "command history", ":Telescope command_history" },
+              { "registers (A-e)", ":Telescope registers" },
+              { "colorshceme", ":Telescope colorscheme", 1 },
+              { "vim options", ":Telescope vim_options" },
+              { "keymaps", ":Telescope keymaps" },
+              { "buffers", ":Telescope buffers" },
+              { "search history (C-h)", ":Telescope search_history" },
+              { "paste mode", ":set paste!" },
+              { "cursor line", ":set cursorline!" },
+              { "cursor column", ":set cursorcolumn!" },
+              { "spell checker", ":set spell!" },
+              { "relative number", ":set relativenumber!" },
+              { "search highlighting (F12)", ":set hlsearch!" },
+            }
+          }
+        }
+      })
+      require("telescope").load_extension("gitmoji")
+      require("telescope").load_extension("emoji")
+      require("telescope").load_extension("command_palette")
+    end
+  },
+  -- Hop
+  {
+    "phaazon/hop.nvim",
+    branch = "v2",
+    config = function()
+      require("hop").setup({ keys = "etovxqpdygfblzhckisuran" })
+    end
+  },
+  -- Neovim treesitter
+  {
+    "nvim-treesitter/nvim-treesitter",
+    lazy = true,
+    opts = {
+      ensure_installed = {
+        "vim",
+        "c",
+        "query",
+        "vimdoc",
+        "ada",
+        "agda",
+        "angular",
+        "apex",
+        "astro",
+        "bass",
+        "bibtex",
+        "bicep",
+        "c_sharp",
+        "capnp",
+        "clojure",
+        "cmake",
+        "comment",
+        "csv",
+        "css",
+        "cpp",
+        "dart",
+        "diff",
+        "dot",
+        "dockerfile",
+        "doxygen",
+        "elixir",
+        "erlang",
+        "fennel",
+        "fish",
+        "fortran",
+        "git_config",
+        "git_rebase",
+        "gitcommit",
+        "go",
+        "gomod",
+        "gosum",
+        "gpg",
+        "graphql",
+        "groovy",
+        "haskell",
+        "haskell_persistent",
+        "hcl",
+        "hjson",
+        "html",
+        "http",
+        "hurl",
+        "java",
+        "json",
+        "jsdoc",
+        "julia",
+        "kotlin",
+        "luau",
+        "luadoc",
+        "make",
+        "matlab",
+        "meson",
+        "nim",
+        "nix",
+        "org",
+        "pascal",
+        "perl",
+        "phpdoc",
+        "prisma",
+        "psv",
+        "pug",
+        "ql",
+        "robot",
+        "ruby",
+        "scala",
+        "scss",
+        "solidity",
+        "svelte",
+        "swift",
+        "sxhkdrc",
+        "templ",
+        "terraform",
+        "toml",
+        "ninja",
+        "regex",
+        "lua",
+        "bash",
+        "markdown",
+        "markdown_inline",
+        "python",
+        "rust",
+        "sql",
+        "php",
+        "javascript",
+        "http",
+        "json",
+        "latex",
+        "commonlisp",
+        "tsv",
+        "tsx",
+        "twig",
+        "typescript",
+        "typoscript",
+        "udev",
+        "usd",
+        "vala",
+        "vue",
+        "vimdoc",
+        "xml",
+        "yaml",
+        "zig",
+        "zathurarc"
+      },
+      highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = { 
+          "php",
+          "markdown",
+          "rust",
+          "python"
+        },
+      },
+      rainbow = {
+        enable = true,
+        extended_mode = true,
+      },
+      incremental_selection = {
+        enable = false,
+        keymaps = {
+          init_selection = '<CR>',
+          scope_incremental = '<CR>',
+          node_incremental = '<TAB>',
+          node_decremental = '<S-TAB>',
+        }
+      },
+      indent = {
+        enable = true,
+        disable = { "python" },
+      },
+      tree_docs = {
+        enable = true,
+      }
     }
   },
-  "nvim-treesitter/nvim-treesitter",
-  { "akinsho/toggleterm.nvim", version = "*" },
+  { "akinsho/toggleterm.nvim", version = "*", config = true },
   { 
     "folke/todo-comments.nvim",
-    dependecies = "nvim-lua/plenary.nvim"
-  },
-  "nvim-treesitter/nvim-tree-docs",  
-  {
-    "nvim-neo-tree/neo-tree.nvim",
-    branch = "v2.x",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "kyazdani42/nvim-web-devicons",
-      "MunifTanjim/nui.nvim"
+    dependecies = "nvim-lua/plenary.nvim",
+    opts = {
+      signs = true,
+      sign_priority = 8,
+      keywords = {
+        FIX = {
+          icon = " ",
+          color = "error",
+          alt = { "FIXME", "BUG", "FIXIT", "ISSUE" },
+        },
+        TODO = { icon = " ", color = "info" },
+        HACK = { icon = " ", color = "warning" },
+        WARN = { 
+          icon = " ",
+          color = "warning",
+          alt = { "WARNING", "XXX" } 
+        },
+        PERF = {
+          icon = " ",
+          alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" }
+        },
+        NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
+        TEST = { 
+          icon = "⏲ ",
+          color = "test",
+          alt = { "TESTING", "PASSED", "FAILED" }
+        },
+      },
+      merge_keywords = true,
+      highlight = {
+        before = "",
+        keyword = "wide",
+        after = "fg",
+        pattern = [[.*<(KEYWORDS)\s*:]],
+        comments_only = true,
+        max_line_len = 400,
+        exclude = {},
+      },
+      colors = {
+       error = { "DiagnosticError", "ErrorMsg", "#DC2626" },
+       warning = { "DiagnosticWarning", "WarningMsg", "#FBBF24" },
+       info = { "DiagnosticInfo", "#2563EB" },
+       hint = { "DiagnosticHint", "#10B981" },
+       default = { "Identifier", "#7C3AED" },
+       test = { "Identifier", "#FF00FF" },
+      },
+      search = {
+        command = "rg",
+        args = {
+          "--color=never",
+          "--no-heading",
+          "--with-filename",
+          "--line-number",
+          "--column",
+        },
+        pattern = [[\b(KEYWORDS):]],
+      },
     }
   },
+  "nvim-treesitter/nvim-tree-docs",  
   { 
     "folke/trouble.nvim",
-    dependencies = "kyazdani42/nvim-web-devicons" 
+    dependencies = "kyazdani42/nvim-web-devicons",
+    opts = {
+      position = "bottom",
+      height = 10,
+      width = 50,
+      icons = true,
+      mode = "workspace_diagnostics",
+      fold_open = "",
+      fold_closed = "",
+      group = true,
+      padding = true,
+      action_keys = {
+        close = "q",
+        cancel = "<esc>",
+        refresh = "r",
+        jump = { "<cr>", "<tab>" },
+        open_split = { "<c-x>" },
+        open_vsplit = { "<c-v>" },
+        open_tab = { "<c-t>" },
+        jump_close = { "o" },
+        toggle_mode = "m",
+        toggle_preview = "P",
+        hover = "K",
+        preview = "p",
+        close_folds = { "zM", "zm" },
+        open_folds = { "zR", "zr" },
+        toggle_fold = { "zA", "za" },
+        previous = "k",
+        next = "j"
+      },
+      indent_lines = true,
+      auto_open = false,
+      auto_close = false,
+      auto_preview = true,
+      auto_fold = false,
+      auto_jump = { "lsp_definitions" },
+      signs = {
+        error = "☢️",
+        warn = "⚠️",
+        hint = "🔍",
+        info = "ℹ️",
+        other = "🤷"
+      },
+      use_diagnostic_signs = false
+    }
   },
   "folke/twilight.nvim",
   {
@@ -1269,18 +2130,458 @@ local plugins = {
     dependencies = { 
       "nvim-lua/plenary.nvim",
       "neovim/nvim-lspconfig"
-    }
+    },
+    opts = {
+      tsserver_locale = "es",
+    },
   },
-  { "kaarmu/typst.vim", ft = "typst" },
+  { "kaarmu/typst.vim", ft = "typst", lazy = false },
   "samjwill/nvim-unception",
   "adelarsq/vim-devicons-emoji",
   "jubnzv/virtual-types.nvim",
-  "liuchengxu/vista.vim",
+  { 
+    "liuchengxu/vista.vim",
+    config = function()
+      local g = vim.g
+      local cmd = vim.cmd
+      g.vista_icon_indent = '["╰─▸ ", "├─▸ "]'
+      g.vista_default_executive = 'ctags'
+      cmd[[let g:vista#renderer#enable_icon = 1]]
+    end
+  },
   "kyazdani42/nvim-web-devicons",
-  "folke/which-key.nvim",
-  "folke/zen-mode.nvim"
-}
+  {
+    "folke/which-key.nvim",
+    init = function()
+      vim.o.timeout = true
+      vim.o.timeoutlen = 300
+    end,
+    config = function()
+      local which_key = require("which-key")
 
+      local setup = {
+        plugins = {
+          marks = true,
+          registers = true,
+          spelling = {
+            enabled = true,
+            suggestions = 20,
+          },
+          presets = {
+            operators = true,
+            motions = true,
+            text_objects = true,
+            windows = true,
+            nav = true,
+            z = true,
+            g = true,
+          },
+        },
+        operators = { gc = "Comments" },
+        key_labels = {},
+        icons = {
+          breadcrumb = "»",
+            separator = "➜",
+            group = "+",
+        },
+        popup_mappings = {
+          scroll_down = "<c-d>",
+          scroll_up = "<c-u>",
+        },
+        window = {
+          border = "rounded",
+          position = "bottom",
+          margin = { 1, 0, 1, 0 },
+          padding = { 0, 0, 0, 0 },
+          winblend = 0,
+        },
+        layout = {
+          height = { min = 4, max = 20 },
+          width = { min = 20, max = 50 },
+          spacing = 1,
+          align = "center",
+        },
+        ignore_missing = true,
+        hidden = {
+          "<silent>",
+          "<cmd>",
+          "<Cmd>",
+          "<CR>",
+          "call",
+          "lua",
+          "^:",
+          "^ " 
+        },
+        show_help = true,
+          triggers_blacklist = {
+            i = { "j", "k" },
+            v = { "j", "k" },
+        },
+      }
+      local opts = {
+        mode = "n",
+        prefix = "<leader>",
+        buffer = nil,
+        silent = true,
+        noremap = true, -- use `noremap` when creating keymaps
+        nowait = true,
+      }
+      local m_opts = {
+          mode = "n",
+          prefix = "m",
+          buffer = nil,
+            silent = true,
+            noremap = true,
+            nowait = true,
+      }
+      -- TODO Mappings
+               local mappings = {
+            ["0"] = { "<Plug>(cokeline-focus-0)", "Focus 0"},
+            ["1"] = { "<Plug>(cokeline-focus-1)", "Focus 1"},
+            ["2"] = { "<Plug>(cokeline-focus-2)", "Focus 2"},
+            ["3"] = { "<Plug>(cokeline-focus-3)", "Focus 3"},
+            ["4"] = { "<Plug>(cokeline-focus-4)", "Focus 4"},
+            ["5"] = { "<Plug>(cokeline-focus-5)", "Focus 5"},
+            ["6"] = { "<Plug>(cokeline-focus-6)", "Focus 6"},
+            ["7"] = { "<Plug>(cokeline-focus-7)", "Focus 7"},
+            ["8"] = { "<Plug>(cokeline-focus-8)", "Focus 8"},
+            ["9"] = { "<Plug>(cokeline-focus-9)", "Focus 9"},
+            B = {
+                name = "Bookmarks",
+                a = { "<cmd>silent BookmarkAnnotate<cr>", "Annotate" },
+                c = { "<cmd>silent BookmarkClear<cr>", "Clear" },
+                t = { "<cmd>silent BookmarkToggle<cr>", "Toggle" },
+                m = { '<cmd>lua require("harpoon.mark").add_file()<cr>', "Harpoon" },
+                n = { '<cmd>lua require("harpoon.ui").toggle_quick_menu()<cr>', "Harpoon Toggle" },
+                l = { "<cmd>lua require('user.bfs').open()<cr>", "Buffers" },
+                j = { "<cmd>silent BookmarkNext<cr>", "Next" },
+                s = { "<cmd>Telescope harpoon marks<cr>", "Search Files" },
+                k = { "<cmd>silent BookmarkPrev<cr>", "Prev" },
+                S = { "<cmd>silent BookmarkShowAll<cr>", "Prev" },
+                x = { "<cmd>BookmarkClearAll<cr>", "Clear All" },
+            },
+            c = { "<cmd>nohl<CR>", "Clear search higlighting" },
+            d = {
+                name = "Debug",
+                b = { "<cmd>lua require'dap'.toggle_breakpoint()<cr>", "Breakpoint" },
+                c = { "<cmd>lua require'dap'.continue()<cr>", "Continue" },
+                i = { "<cmd>lua require'dap'.step_into()<cr>", "Into" },
+                o = { "<cmd>lua require'dap'.step_over()<cr>", "Over" },
+                O = { "<cmd>lua require'dap'.step_out()<cr>", "Out" },
+                r = { "<cmd>lua require'dap'.repl.toggle()<cr>", "Repl" },
+                l = { "<cmd>lua require'dap'.run_last()<cr>", "Last" },
+                x = { "<cmd>lua require'dap'.terminate()<cr>", "Exit" },
+                t = {
+                    name = "Telescope",
+                    c = {"<cmd>lua require'telescope'.extensions.dap.commands{}<CR>", "Telescope"},
+                    o = {"<cmd>lua require'telescope'.extensions.dap.configurations{}<CR>", "Telescope"},
+                    b = {"<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<CR>", "Telescope"},
+                    v = {"<cmd>lua require'telescope'.extensions.dap.variables{}<CR>", "Telescope"},
+                    f = {"<cmd>lua require'telescope'.extensions.dap.frames{}<CR>", "Telescope"},
+                },
+                u = {
+                    name = "dap-ui",
+                    s = { "<cmd>lua require'dapui'.setup()<cr>", "Setup" },
+                    o = { "<cmd>lua require'dapui'.open()<cr>", "Open" },
+                    c = { "<cmd>lua require'dapui'.close()<cr>", "Close" },
+                    t = { "<cmd>lua require'dapui'.toggle()<cr>", "Toggle" },
+                },
+            },
+            D = {
+                name = "Documentation",
+                d = {"<cmd>lua require'neogen'.generate()<cr>", "Generate  docu"},
+            },
+            f = {
+                name = "Find/Focus",
+                b = { "<cmd>Telescope buffers<cr>", "Find in buffers" },
+                c = { "<cmd>Telescope colorscheme<cr>", "Colorscheme" },
+                d = { "<cmd>Telescope gitmoji<cr>", "Gitmoji" },
+                e = { "<cmd>Telescope emoji<cr>", "Emojis" },
+                f = { "<cmd>Telescope find_files<cr>", "Find File" },
+                g = { "<cmd>Telescope live_grep<cr>", "Live grep" },
+                h = { "<cmd>Telescope help_tags<cr>", "Help" },
+                i = { "<cmd>lua require('telescope').extensions.media_files.media_files()<cr>", "Media" },
+                k = { "<cmd>Telescope keymaps<cr>", "Keymaps" },
+                l = { "<cmd>Telescope resume<cr>", "Last Search" },
+                n = { "<Plug>(cokeline-switch-next)", "Focus next"},
+                o = { "<cmd>Telescope file_browser<cr>", "Commands" },
+                p = { "<Plug>(cokeline-switch-prev)", "Focus preview"},
+                r = { "<cmd>Telescope oldfiles<cr>", "Recent File" },
+                s = { "<cmd>Telescope grep_string theme=ivy<cr>", "Find String" },
+                t = { "<cmd>Telescope live_grep theme=ivy<cr>", "Find Text" },
+                y = { "<cmd>Telescope symbols<cr>", "Symbols" },
+                C = { "<cmd>Telescope commands<cr>", "Commands" },
+                M = { "<cmd>Telescope man_pages<cr>", "Man Pages" },
+                R = { "<cmd>Telescope registers<cr>", "Registers" },
+                -- Focus
+            },
+            g = {
+                name = "Git",
+                g = { "<cmd>LazyGit<cr>", "Lazygit" },
+                j = { "<cmd>lua require 'gitsigns'.next_hunk()<cr>", "Next Hunk" },
+                k = { "<cmd>lua require 'gitsigns'.prev_hunk()<cr>", "Prev Hunk" },
+                l = { "<cmd>GitBlameToggle<cr>", "Blame" },
+                m = { "<cmd>Telescope gitmoji<cr>", "Git emoji" },
+                p = { "<cmd>lua require 'gitsigns'.preview_hunk()<cr>", "Preview Hunk" },
+                r = { "<cmd>lua require 'gitsigns'.reset_hunk()<cr>", "Reset Hunk" },
+                R = { "<cmd>lua require 'gitsigns'.reset_buffer()<cr>", "Reset Buffer" },
+                s = { "<cmd>lua require 'gitsigns'.stage_hunk()<cr>", "Stage Hunk" },
+                u = { "<cmd>lua require 'gitsigns'.undo_stage_hunk()<cr>", "Undo Stage Hunk", },
+                o = { "<cmd>Telescope git_status<cr>", "Open changed file" },
+                b = { "<cmd>Telescope git_branches<cr>", "Checkout branch" },
+                c = { "<cmd>Telescope git_commits<cr>", "Checkout commit" },
+                d = { "<cmd>Gitsigns diffthis HEAD<cr>", "Diff", },
+                i = { "<cmd>SidebarNvimToggle<cr>", "Toggle sidebar", },
+
+                G = {
+                    name = "Gist",
+                    a = { "<cmd>Gist -b -a<cr>", "Create Anon" },
+                    d = { "<cmd>Gist -d<cr>", "Delete" },
+                    f = { "<cmd>Gist -f<cr>", "Fork" },
+                    g = { "<cmd>Gist -b<cr>", "Create" },
+                    l = { "<cmd>Gist -l<cr>", "List" },
+                    p = { "<cmd>Gist -b -p<cr>", "Create Private" },
+                },
+            },
+            l = {
+                name = "LSP",
+                a = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "Code Action" },
+                w = {
+                    "<cmd>Telescope lsp_workspace_diagnostics<cr>",
+                    "Workspace Diagnostics",
+                },
+                f = { "<cmd>lua vim.lsp.buf.format({ async = true })<cr>", "Format" },
+                F = { "<cmd>LspToggleAutoFormat<cr>", "Toggle Autoformat" },
+                d = { "<cmd>lua vim.lsp.buf.definition()<cr>", "Definition"},
+                G = { "<cmd>lua vim.lsp.buf.declaration()<cr>", "Declaration"},
+                i = { "<cmd>LspInfo<cr>", "Info" },
+                I = { "<cmd>LspInstallInfo<cr>", "Installer Info" },
+                h = { "<cmd>lua vim.lsp.buf.hover()<cr>", "Hover"},
+                j = {
+                    "<cmd>lua vim.diagnostic.goto_next({buffer=0})<CR>",
+                    "Next Diagnostic",
+                },
+                k = {
+                    "<cmd>lua vim.diagnostic.goto_prev({buffer=0})<cr>",
+                    "Prev Diagnostic",
+                },
+                K = { "<cmd>lua vim.lsp.buf.hover()<cr>", "Hover"},
+                l = { "<cmd>lua vim.lsp.codelens.run()<cr>", "CodeLens Action" },
+                o = { "<cmd>SymbolsOutline<cr>", "Outline" },
+                q = { "<cmd>lua vim.lsp.diagnostic.set_loclist()<cr>", "Quickfix" },
+                r = { "<cmd>lua vim.lsp.buf.rename()<cr>", "Rename" },
+                R = { "<cmd>TroubleToggle lsp_references<cr>", "References" },
+                s = { "<cmd>Telescope lsp_document_symbols<cr>", "Document Symbols" },
+                S = {
+                    "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>",
+                    "Workspace Symbols",
+                },
+                t = { '<cmd>lua require("user.functions").toggle_diagnostics()<cr>', "Toggle Diagnostics" },
+                u = { "<cmd>LuaSnipUnlinkCurrent<cr>", "Unlink Snippet" },
+                x = { "<cmd>TroubleToggle<cr>", "Diagnostics" },
+            },
+            o = {
+                name = "Options",
+                w = { '<cmd>lua require("user.functions").toggle_option("wrap")<cr>', "Wrap" },
+                r = { '<cmd>lua require("user.functions").toggle_option("relativenumber")<cr>', "Relative" },
+                l = { '<cmd>lua require("user.functions").toggle_option("cursorline")<cr>', "Cursorline" },
+                s = { '<cmd>lua require("user.functions").toggle_option("spell")<cr>', "Spell" },
+                t = { '<cmd>lua require("user.functions").toggle_tabline()<cr>', "Tabline" },
+            },
+            p = {
+                name = "Lazy",
+                c = { "<cmd>Lazy check<cr>", "Check" },
+                C = { "<cmd>Lazy clean<cr>", "Clean" },
+                i = { "<cmd>Lazy install<cr>", "Install" },
+                s = { "<cmd>Lazy sync<cr>", "Sync" },
+                u = { "<cmd>Lazy update<cr>", "Update" },
+                r = { "<cmd>Lazy restore<cr>", "Restore" },
+                l = { "<cmd>Lazy<cr>", "Lazy" },
+            },
+            r = {
+                name = "Rest",
+                r = { "<Plug>RestNvim", "Run rest" },
+                p = { "<Plug>RestNvimPreview", "Run rest preview" },
+                l = { "<Plug>RestNvimLast", "Run rest last" },
+            },
+            s = {
+                name = "Telescope",
+                c = { "<cmd>Telescope eomoji<cr>", "Close" },
+                f = { "<cmd>%SnipRun<cr>", "Run File" },
+                i = { "<cmd>SnipInfo<cr>", "Info" },
+                m = { "<cmd>SnipReplMemoryClean<cr>", "Mem Clean" },
+                r = { "<cmd>SnipReset<cr>", "Reset" },
+                t = { "<cmd>SnipRunToggle<cr>", "Toggle" },
+                x = { "<cmd>SnipTerminate<cr>", "Terminate" },
+            },
+            S = { "<cmd>w<CR>", "Fast saving"},
+            t = {
+                name = "Terminal",
+                ["1"] = { ":1ToggleTerm<cr>", "1" },
+                ["2"] = { ":2ToggleTerm<cr>", "2" },
+                ["3"] = { ":3ToggleTerm<cr>", "3" },
+                ["4"] = { ":4ToggleTerm<cr>", "4" },
+                f = { "<cmd>ToggleTerm direction=float<cr>", "Float" },
+                h = { "<cmd>ToggleTerm size=10 direction=horizontal<cr>", "Horizontal" },
+                j = { "<cmd>TermExec cmd='gjs %'<cr>", "Execute JavaScript" },
+                p = { "<cmd>TermExec cmd='python %'<cr>", "Execute Python" },
+                t = { "<cmd> ToggleTerm<cr>", "Open terminal"},
+                v = { "<cmd>ToggleTerm size=80 direction=vertical<cr>", "Vertical" },
+            },
+            T = {
+                name = "Treesitter",
+                h = { "<cmd>TSHighlightCapturesUnderCursor<cr>", "Highlight" },
+                p = { "<cmd>TSPlaygroundToggle<cr>", "Playground" },
+                r = { "<cmd>TSToggle rainbow<cr>", "Rainbow" },
+            },
+            u = {
+                name = "TodoComments",
+                ["t"] = { "<cmd>TodoTelescope<CR>", "Show Comments" },
+                ["q"] = { "<cmd>TodoQuickFix<CR>", "Quick Fix" },
+                ["l"] = { "<cmd>TodoLocList<CR>", "List Comments" },
+            },
+            v = {
+                name = "Vista",
+                o = { "<cmd>:Vista!!<cr>", "Open Tag viewer" },
+            },
+            w = {
+                name = "Window",
+                v = { "<C-w>v", "Vertical Split" },
+                h = { "<C-w>s", "Horizontal Split" },
+                e = { "<C-w>=", "Make Splits Equal" },
+                q = { "close<CR>", "Close Split" },
+                m = { "MaximizerToggle<CR>", "Toggle Maximizer" },
+            },
+            x = {
+                name = "Trouble",
+                x = {"<cmd>Trouble<cr>", "Open Trouble window"},
+                w = {"<cmd>Trouble workspace_diagnostics<cr>", "Diagnostics"},
+                d = {"<cmd>Trouble document_diagnostics<cr>", "Documents"},
+                l = {"<cmd>Trouble loclist<cr>", "List"},
+                q = {"<cmd>Trouble quickfix<cr>", "QuickFix"},
+
+            },
+            z = {
+                name = "Zettelkasten",
+                b = {"<cmd>ZkBacklinks<cr>", "Backlinks"},
+                h = {"<cmd>lua vim.lsp.buf.hover()<cr>", "Hover"},
+                l = {"<cmd>ZkLinks<cr>", "Links"},
+                n = {"<cmd>ZkNew { title = vim.fn.input('Título: ') }<cr>", "Nueva nota"},
+                o = {"<cmd>ZkNotes<cr>", "Abrir notas"},
+                t = {"<cmd>ZkTags<cr>", "Abrir tags"},
+
+            }
+        }
+
+             local topts = {
+            mode = "t", -- TERMINAL mode
+            prefix = "",
+            buffer = nil, -- Global mappings. Specify a buffer number for buffer local mappings
+            silent = true, -- use `silent` when creating keymaps
+            noremap = true, -- use `noremap` when creating keymaps
+            nowait = true, -- use `nowait` when creating keymaps
+        }
+
+        local tmappings = {
+            ["<C-t>"] = {
+                ["1"] = {"<cmd>1ToggleTerm<cr>", "ToggleTerm"},
+                ["2"] = {"<cmd>2ToggleTerm<cr>", "ToggleTerm"},
+                ["3"] = {"<cmd>3ToggleTerm<cr>", "ToggleTerm"},
+                ["4"] = {"<cmd>4ToggleTerm<cr>", "ToggleTerm"},
+            },
+            ["<esc>"] = {"<cmd>ToggleTerm<cr>", "ToggleTerm"},
+            ["<C-h>"] = {"<cmd>wincmd h<cr>", "ToggleTerm"},
+            ["<C-j>"] = {"<cmd>wincmd j<cr>", "ToggleTerm"},
+            ["<C-k>"] = {"<cmd>wincmd k<cr>", "ToggleTerm"},
+            ["<C-l>"] = {"<cmd>wincmd l<cr>", "ToggleTerm"},
+            --["<C-t>"] = {"<cmd>ToggleTerm<cr>", "ToggleTerm"},
+            ["<C-w>"] = {
+                h = { "<C-\\><C-n><C-w>h", "Terminal" },
+                j = { "<C-\\><C-n><C-w>j", "Terminal" },
+                k = { "<C-\\><C-n><C-w>k", "Terminal" },
+                l = { "<C-\\><C-n><C-w>l", "Terminal" },
+                ["<C-w>"] = { "<C-\\><C-n><C-w><C-w>", "Terminal" },
+            }
+        }
+
+        local vopts = {
+            mode = "v", -- VISUAL mode
+            prefix = "<leader>",
+            buffer = nil, -- Global mappings. Specify a buffer number for buffer local mappings
+            silent = true, -- use `silent` when creating keymaps
+            noremap = true, -- use `noremap` when creating keymaps
+            nowait = true, -- use `nowait` when creating keymaps
+        }
+
+        local vmappings = {
+            ["/"] = { "<Plug>(comment_toggle_linewise_visual)", "Comment toggle linewise (visual)" },
+            s = { "<esc><cmd>'<,'>SnipRun<cr>", "Run range" },
+            z = {
+                name = "Zettelkasten",
+                a = {":'<,'>lua vim.lsp.buf.range_code_action()<cr>", "Acciones"},
+                f = {"<cmd>ZkMatch<cr>", "Abrir por selección"},
+
+            }
+        }
+
+        local iopts = {
+            mode = "i", -- INSERT mode
+            prefix = "",
+            buffer = nil, -- Global mappings. Specify a buffer number for buffer local mappings
+            silent = true, -- use `silent` when creating keymaps
+            noremap = true, -- use `noremap` when creating keymaps
+            nowait = true, -- use `nowait` when creating keymaps
+        }
+
+        local imappings = {
+            ["<C-h>"] = { "<left>", "Movements"},
+            ["<C-j>"] = { "<down>", "Movements"},
+            ["<C-k>"] = { "<up>", "Movements"},
+            ["<C-l>"] = { "<right>", "Movements"},
+        }
+
+
+        local nopts = {
+            mode = "n", -- NORMAL mode
+            prefix = "",
+            buffer = nil, -- Global mappings. Specify a buffer number for buffer local mappings
+            silent = true, -- use `silent` when creating keymaps
+            noremap = true, -- use `noremap` when creating keymaps
+            nowait = true, -- use `nowait` when creating keymaps
+        }
+
+        local nmappings = {
+            ["<C-h>"] = { "<C-w>h", "Movements"},
+            ["<C-j>"] = { "<C-w>j", "Movements"},
+            ["<C-k>"] = { "<C-w>k", "Movements"},
+            ["<C-l>"] = { "<C-w>l", "Movements"},
+            ["<C-g>"] = { "<cmd> LazyGit<cr>", "Open LazyGit"},
+            ["<C-n>"] = { "<cmd> Neotree toggle<cr>", "Toggle Neotree"},
+            ["<C-7>"] = { "<cmd> Telescope command_palette<cr>", "Paleta de comandos"},
+            ["<C-q>"] = { "<cmd> Vista!!<cr>", "Vista"},
+            ["<C-s>"] = { "<cmd> SidebarNvimToggle<cr>", "Vista"},
+            ["<C-t>"] = { "<cmd>ToggleTerm<cr>", "Toggle terminal"},
+            ["<bs>"] = { ":edit #<cr>", "Hacia atrás"},
+            g = {
+                name = "LSP",
+                d = { "<cmd>lua vim.lsp.buf.definition()<cr>", "Definition"},
+                h = { "<cmd>lua vim.lsp.buf.hover()<cr>", "Hover"},
+                i = { "<cmd>lua vim.lsp.buf.implementation()<cr>", "Implementation"},
+                s = { "<cmd>lua vim.lsp.buf.signature_help()<cr>", "Signature"},
+                D = { "<cmd>lua vim.lsp.buf.declaration()<cr>", "Declaration"},
+            },
+        }
+
+                which_key.setup(setup)
+        which_key.register(mappings, opts)
+        which_key.register(vmappings, vopts)
+        which_key.register(tmappings, topts)
+        which_key.register(imappings, iopts)
+        which_key.register(nmappings, nopts)
+    end
+  },
+  "folke/zen-mode.nvim",
+}
 
 -- Setup package manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -1298,10 +2599,6 @@ vim.opt.runtimepath:prepend(lazypath)
 
 require("lazy").setup(plugins)
 
---------------------------------------------
--- KEYMAPS
---------------------------------------------
-
 local function map(m, k, v)
   vim.keymap.set(m, k, v, { silent = true })
 end
@@ -1309,13 +2606,6 @@ end
 -- Mimic shell movements
 map("i", "<C-E>", "<ESC>A")
 map("i", "<C-A>", "<ESC>I")
-
--- Keybindings for telescope
-map("n", "<leader>fr", "<CMD>Telescope oldfiles<CR>")
-map("n", "<leader>ff", "<CMD>Telescope find_files<CR>")
-map("n", "<leader>fb", "<CMD>Telescope file_browser<CR>")
-map("n", "<leader>fw", "<CMD>Telescope live_grep<CR>")
-map("n", "<leader>ht", "<CMD>Telescope colorscheme<CR>")
 
 -- Barbar
 map("n", "<A-,>", "<Cmd>BufferPrevious<CR>")
@@ -1335,17 +2625,26 @@ map("n", "<A-0>", "<Cmd>BufferLast<CR>")
 map("n", "<A-p>", "<Cmd>BufferPin<CR>")
 map("n", "<A-c>", "<Cmd>BufferClose<CR>")
 map("n", "<C-p>", "<Cmd>BufferPick<CR>")
-map("n", "<Space>bb", "<Cmd>BufferOrderByBufferNumber<CR>")
-map("n", "<Space>bd", "<Cmd>BufferOrderByDirectory<CR>")
-map("n", "<Space>bl", "<Cmd>BufferOrderByLanguage<CR>")
-map("n", "<Space>bw", "<Cmd>BufferOrderByWindowNumber<CR>")
+map("n", "<leader>bb", "<Cmd>BufferOrderByBufferNumber<CR>")
+map("n", "<leader>bd", "<Cmd>BufferOrderByDirectory<CR>")
+map("n", "<leader>bl", "<Cmd>BufferOrderByLanguage<CR>")
+map("n", "<leader>bw", "<Cmd>BufferOrderByWindowNumber<CR>")
 
----------------------------------------------------
--- HIGHLIGHTS 
----------------------------------------------------
+-- Telescope
+map("n", "<leader>fb", "<cmdTelescope buffers<cr>")
+map("n", "<leader>fc", "<cmd>telescope commands<cr>")
+map("n", "<leader>fd", "<cmd>telescope diagnostics<cr>")
+map("n", "<leader>ff", "<cmd>telescope find_files<cr>")
+map("n", "<leader>fg", "<cmd>telescope live_grep<cr>")
+map("n", "<leader>fgb", "<cmd>telescope git_branches<cr>")
+map("n", "<leader>fgc", "<cmd>telescope git_commits<cr>")
+map("n", "<leader>fgs", "<cmd>telescope git_status<cr>")
+map("n", "<leader>fh", "<cmd>telescope help_tags<cr>")
+
+-- NvimTree
+map("n", "<leader>e", "<cmd>NvimTreeToggle<cr>")
 
 -- Highlight on yank
-
 vim.api.nvim_create_autocmd("TextYankPost",
   {
     callback = function()
