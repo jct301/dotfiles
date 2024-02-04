@@ -7,6 +7,7 @@
 #+OPTIONS: toc:2
 
 * TABLE OF CONTENTS :toc:
+- [[#settings][SETTINGS]]
 - [[#elpaca-setup-package-manager][ELPACA SETUP PACKAGE MANAGER]]
 - [[#buffer-movements][BUFFER MOVEMENTS]]
 - [[#app-launchers][APP LAUNCHERS]]
@@ -31,8 +32,8 @@
   - [[#git-time-machine][Git Time Machine]]
   - [[#magit][Magit]]
 - [[#highlight-todo][HIGHLIGHT TODO]]
-- [[#ivy-counsel][IVY (COUNSEL)]]-
- [[#language-support][LANGUAGE SUPPORT]]
+- [[#ivy-counsel][IVY (COUNSEL)]]
+- [[#language-support][LANGUAGE SUPPORT]]
 - [[#minibuffer-escape][MINIBUFFER ESCAPE]]
 - [[#modeline][MODELINE]]
 - [[#neotree][NEOTREE]]
@@ -525,15 +526,15 @@ Defining the various fonts that Emacs will use.
 ** Setting the Font Face
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-  :font "Mononoki Nerd Font"
+  :font "Iosevka Nerd Font"
   :height 110
   :weight 'medium)
 (set-face-attribute 'variable-pitch nil
-  :font "Mononoki Nerd Font"
+  :font "Iosevka Nerd Font"
   :height 120
   :weight 'medium)
 (set-face-attribute 'fixed-pitch nil
-  :font "Mononoki Nerd Font"
+  :font "Iosevka Nerd Font"
   :height 110
   :weight 'medium)
 ;; Makes commented text and keywords italics.
@@ -547,7 +548,7 @@ Defining the various fonts that Emacs will use.
 ;; This sets the default font on all graphical frames created after restarting Emacs.
 ;; Does the same thing as 'set-face-attribute default' above, but emacsclient fonts
 ;; are not right unless I also add this method of setting the default font.
-(add-to-list 'default-frame-alist '(font . "Mononoki Nerd Font"))
+(add-to-list 'default-frame-alist '(font . "Iosevka Nerd Font"))
 
 ;; Uncomment the following line if line spacing needs adjusting.
 (setq-default line-spacing 0.12)
