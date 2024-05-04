@@ -1,7 +1,7 @@
 #!/usr/bin/sh
 
 bookmark="$(xclip -o)"
-file="$HOME/sources/snippets"
+file="$HOME/.snippets.txt"
 
 
 if grep -q "^$bookmark$" "$file"; then

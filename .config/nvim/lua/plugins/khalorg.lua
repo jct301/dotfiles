@@ -1,1 +1,0 @@
-  return { 'BartSte/nvim-khalorg' }

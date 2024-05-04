@@ -17,13 +17,13 @@ import colors
 mod="mod4"              # Set mod key to SUPER/WINDOWS
 myTerm="alacritty"      # My terminal of choice
 myBrowser="qutebrowser" # My browser of choice
-myLauncher="dmenu_run -l 20 -g 4 -bw 4 -c -p RUN:"
+myLauncher="dmenu_run -l 20 -g 4 -bw 2 -c -p RUN:"
 launcher="rofi -show drun"
 keyboards = ["es"]
-fontConfig = "Iosevka Nerd Font"
-redInterface = "enp6s0"
-save_bookmark = "/home/jc/.local/bin/save-bookmark"
-list_bookmark = "/home/jc/.local/bin/list-bookmark"
+fontConfig = "Mononoki Nerd Font"
+redInterface = "enp2s0f2"
+save_bookmark = "~/.local/bin/save-bookmark"
+list_bookmark = "~/.local/bin/list-bookmark"
 
 ### COLORSCHEME ###
 # Colors are defined in a separate 'colors.py' file.

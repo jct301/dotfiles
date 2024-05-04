@@ -1,34 +1,28 @@
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # My zsh config. Not much to see here; just some pretty standard stuff.
 
 ### EXPORT
 export TERM="xterm-256color"                      # getting proper colors
 export HISTORY_IGNORE="(ls|cd|pwd|exit|sudo reboot|history|cd -|cd ..)"
-export EDITOR="emacsclient -t -a ''"              # $EDITOR use Emacs in terminal
+export EDITOR="emacsclient -t -a """              # $EDITOR use Emacs in terminal
 export VISUAL="emacsclient -c -a emacs"           # $VISUAL use Emacs in GUI mode
 
 ### SET MANPAGER
 ### Uncomment only one of these!
 
 ### "bat" as manpager
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export MANPAGER='sh -c "col -bx | bat -l man -p"'
 
 ### "vim" as manpager
-# export MANPAGER='/bin/bash -c "vim -MRn -c \"set buftype=nofile showtabline=0 ft=man ts=8 nomod nolist norelativenumber nonu noma\" -c \"normal L\" -c \"nmap q :qa<CR>\"</dev/tty <(col -b)"'
+# export MANPAGER="/bin/bash -c "vim -MRn -c \"set buftype=nofile showtabline=0 ft=man ts=8 nomod nolist norelativenumber nonu noma\" -c \"normal L\" -c \"nmap q :qa<CR>\"</dev/tty <(col -b)""
 
 ### "nvim" as manpager
-# export MANPAGER="nvim -c 'set ft=man' -"
+# export MANPAGER="nvim -c "set ft=man" -"
 
 ### SET VI MODE ###
 # Comment this line out to enable default emacs-like bindings
 bindkey -v
 
-# If not running interactively, don't do anything
+# If not running interactively, don"t do anything
 [[ $- != *i* ]] && return
 
 ### PATH
@@ -52,18 +46,6 @@ if [ -d "/var/lib/flatpak/exports/bin/" ] ;
   then PATH="/var/lib/flatpak/exports/bin/:$PATH"
 fi
 
-# pnpm
-export PNPM_HOME="/home/jc/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end
-
-# Deno
-export DENO_INSTALL="/home/jc/.deno"
-export PATH="$DENO_INSTALL/bin:$PATH"
-
 # BUN
 export PATH="$HOME/.bun/bin:$PATH"
 
@@ -77,19 +59,20 @@ fi
 if [ -z "$XDG_CACHE_HOME" ] ; then
     export XDG_CACHE_HOME="$HOME/.cache"
 fi
-export XMONAD_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/xmonad" # xmonad.hs is expected to stay here
+export XMONAD_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/xmonad"
 export XMONAD_DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/xmonad"
 export XMONAD_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/xmonad"
 
 ### CHANGE TITLE OF TERMINALS
 case ${TERM} in
   xterm*|rxvt*|Eterm*|aterm|kterm|gnome*|alacritty|st|konsole*)
-    PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\007"'
+    PROMPT_COMMAND="echo -ne 'e\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\007'"
         ;;
   screen*)
-    PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\033\\"'
+    PROMPT_COMMAND="echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\033\\""
     ;;
 esac
+
 
 ### Function extract for common file formats ###
 SAVEIFS=$IFS
@@ -120,12 +103,12 @@ function extract {
             *.cpio)      cpio -id < ./"$n"  ;;
             *.cba|*.ace)      unace x ./"$n"      ;;
             *)
-                         echo "extract: '$n' - unknown archive method"
+                         echo "extract: "$n" - unknown archive method"
                          return 1
                          ;;
           esac
       else
-          echo "'$n' - file does not exist"
+          echo ""$n" - file does not exist"e
           return 1
       fi
     done
@@ -166,22 +149,25 @@ alias cat="bat"
 alias em="/usr/bin/emacs -nw"
 alias emacs="emacsclient -c -a 'emacs'"
 
-# Changing "ls" to "exa"
-alias ls='exa -al --color=always --group-directories-first' # my preferred listing
-alias la='exa -a --color=always --group-directories-first'  # all files and dirs
-alias ll='exa -l --color=always --group-directories-first'  # long format
-alias lt='exa -aT --color=always --group-directories-first' # tree listing
-alias l.='exa -a | egrep "^\."'
+# Changing "ls" to "eza"
+alias ls="eza -al --color=always --group-directories-first" # my preferred listing
+alias la="eza -a --color=always --group-directories-first"  # all files and dirs
+alias ll="eza -l --color=always --group-directories-first"  # long format
+alias lt="eza -aT --color=always --group-directories-first" # tree listing
+alias l.="eza -al --color=always --group-directories-first ../" # ls on the PARENT directory
+alias l..="eza -al --color=always --group-directories-first ../../" # ls on directory 2 levels up
+alias l...="eza -al --color=always --group-directories-first ../../../" # ls on directory 3 levels up
+
 
 # pacman and yay
-alias pacsyu='sudo pacman -Syu'                  # update only standard pkgs
-alias pacsyyu='sudo pacman -Syyu'                # Refresh pkglist & update standard pkgs
-alias yaysua='yay -Sua --noconfirm'              # update only AUR pkgs (yay)
-alias yaysyu='yay -Syu --noconfirm'              # update standard pkgs and AUR pkgs (yay)
-alias parsua='paru -Sua --noconfirm'             # update only AUR pkgs (paru)
-alias parsyu='paru -Syu --noconfirm'             # update standard pkgs and AUR pkgs (paru)
-alias unlock='sudo rm /var/lib/pacman/db.lck'    # remove pacman lock
-alias cleanup='sudo pacman -Rns $(pacman -Qtdq)' # remove orphaned packages
+alias pacsyu="sudo pacman -Syu"                  # update only standard pkgs
+alias pacsyyu="sudo pacman -Syyu"                # Refresh pkglist & update standard pkgs
+alias yaysua="yay -Sua --noconfirm"              # update only AUR pkgs (yay)
+alias yaysyu="yay -Syu --noconfirm"              # update standard pkgs and AUR pkgs (yay)
+alias parsua="paru -Sua --noconfirm"             # update only AUR pkgs (paru)
+alias parsyu="paru -Syu --noconfirm"             # update standard pkgs and AUR pkgs (paru)
+alias unlock="sudo rm /var/lib/pacman/db.lck"    # remove pacman lock
+alias cleanup="sudo pacman -Rns $(pacman -Qtdq)" # remove orphaned packages
 
 # get fastest mirrors
 alias mirror="sudo reflector -f 30 -l 30 --number 10 --verbose --save /etc/pacman.d/mirrorlist"
@@ -190,45 +176,45 @@ alias mirrors="sudo reflector --latest 50 --number 20 --sort score --save /etc/p
 alias mirrora="sudo reflector --latest 50 --number 20 --sort age --save /etc/pacman.d/mirrorlist"
 
 # Colorize grep output (good for log files)
-alias grep='grep --color=auto'
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
+alias grep="grep --color=auto"
+alias egrep="egrep --color=auto"
+alias fgrep="fgrep --color=auto"
 
 # confirm before overwriting something
 alias cp="cp -i"
-alias mv='mv -i'
-alias rm='rm -i'
+alias mv="mv -i"
+alias rm="rm -i"
 
 # adding flags
-alias df='df -h'                          # human-readable sizes
-alias free='free -m'                      # show sizes in MB
-alias lynx='lynx -cfg=~/.lynx/lynx.cfg -lss=~/.lynx/lynx.lss -vikeys'
-alias vifm='/home/jc/.config/vifm/scripts/vifmrun'
-alias ncmpcpp='ncmpcpp ncmpcpp_directory=$HOME/.config/ncmpcpp/'
-alias mocp='mocp -M "$XDG_CONFIG_HOME"/moc -O MOCDir="$XDG_CONFIG_HOME"/moc'
+alias df="df -h"                          # human-readable sizes
+alias free="free -m"                      # show sizes in MB
+alias lynx="lynx -cfg=~/.lynx/lynx.cfg -lss=~/.lynx/lynx.lss -vikeys"
+alias vifm="$HOME/.config/vifm/scripts/vifmrun"
+alias ncmpcpp="ncmpcpp ncmpcpp_directory=$HOME/.config/ncmpcpp/"
+alias mocp="mocp -M "$XDG_CONFIG_HOME"/moc -O MOCDir="$XDG_CONFIG_HOME"/moc"
 
 # ps
 alias psa="ps auxf"
 alias psgrep="ps aux | grep -v grep | grep -i -e VSZ -e"
-alias psmem='ps auxf | sort -nr -k 4'
-alias pscpu='ps auxf | sort -nr -k 3'
+alias psmem="ps auxf | sort -nr -k 4"
+alias pscpu="ps auxf | sort -nr -k 3"
 
 # Merge Xresources
-alias merge='xrdb -merge ~/.Xresources'
+alias merge="xrdb -merge ~/.Xresources"
 
 # git
-alias addup='git add -u'
-alias addall='git add .'
-alias branch='git branch'
-alias checkout='git checkout'
-alias clone='git clone'
-alias commit='git commit -m'
-alias fetch='git fetch'
-alias pull='git pull origin'
-alias push='git push origin'
-alias stat='git status'  # 'status' is protected name so using 'stat' instead
-alias tag='git tag'
-alias newtag='git tag -a'
+alias addup="git add -u"
+alias addall="git add ."
+alias branch="git branch"
+alias checkout="git checkout"
+alias clone="git clone"
+alias commit="git commit -m"
+alias fetch="git fetch"
+alias pull="git pull origin"
+alias push="git push origin"
+alias stat="git status"  # "status" is protected name so using "stat" instead
+alias tag="git tag"
+alias newtag="git tag -a"
 
 # get error messages from journalctl
 alias jctl="journalctl -p 3 -xb"
@@ -240,14 +226,14 @@ alias gpg-check="gpg2 --keyserver-options auto-key-retrieve --verify"
 alias gpg-retrieve="gpg2 --keyserver-options auto-key-retrieve --receive-keys"
 
 # Play audio files in current dir by type
-alias playwav='deadbeef *.wav'
-alias playogg='deadbeef *.ogg'
-alias playmp3='deadbeef *.mp3'
+alias playwav="deadbeef *.wav"
+alias playogg="deadbeef *.ogg"
+alias playmp3="deadbeef *.mp3"
 
 # Play video files in current dir by type
-alias playavi='vlc *.avi'
-alias playmov='vlc *.mov'
-alias playmp4='vlc *.mp4'
+alias playavi="vlc *.avi"
+alias playmov="vlc *.mov"
+alias playmp4="vlc *.mp4"
 
 # yt-dlp
 alias yta-aac="yt-dlp --extract-audio --audio-format aac "
@@ -262,9 +248,9 @@ alias ytv-best="yt-dlp -f bestvideo+bestaudio "
 
 # switch between shells
 # I do not recommend switching default SHELL from bash.
-alias tobash="sudo chsh $USER -s /bin/bash && echo 'Now log out.'"
-alias tozsh="sudo chsh $USER -s /bin/zsh && echo 'Now log out.'"
-alias tofish="sudo chsh $USER -s /bin/fish && echo 'Now log out.'"
+alias tobash="sudo chsh $USER -s /bin/bash && echo "Now log out.""
+alias tozsh="sudo chsh $USER -s /bin/zsh && echo "Now log out.""
+alias tofish="sudo chsh $USER -s /bin/fish && echo "Now log out.""
 
 # bare git repo alias for dotfiles
 alias config="/usr/bin/git --git-dir=$HOME/dotfiles --work-tree=$HOME"
@@ -276,10 +262,10 @@ alias fx="felix"
 alias tb="nc termbin.com 9999"
 
 # the terminal rickroll
-alias rr='curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash'
+alias rr="curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash"
 
 # Unlock LBRY tips
-alias tips='lbrynet txo spend --type=support --is_not_my_input --blocking'
+alias tips="lbrynet txo spend --type=support --is_not_my_input --blocking"
 
 ### RANDOM COLOR SCRIPT ###
 # Get this script from my GitLab: gitlab.com/dwt1/shell-color-scripts
@@ -313,9 +299,6 @@ export NVM_DIR="$HOME/.config/nvm"
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-
-# bun completions
-[ -s "/home/jc/.bun/_bun" ] && source "/home/jc/.bun/_bun"
 
 bindkey "^[[H" beginning-of-line
 bindkey "^[[F" end-of-line
